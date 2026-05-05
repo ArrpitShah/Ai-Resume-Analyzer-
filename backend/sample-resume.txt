@@ -1,0 +1,33 @@
+﻿John Doe
+john.doe@gmail.com
++91 9876543210
+linkedin.com/in/johndoe
+github.com/johndoe
+
+SUMMARY
+Full Stack Developer with 3 years of experience in React and Node.js
+
+SKILLS
+JavaScript, TypeScript, React, Node.js, MongoDB, Docker, Git, AWS
+
+EXPERIENCE
+Google India
+Software Engineer
+Jan 2022 - Present
+- Built REST APIs using Node.js and Express
+- Improved app performance by 40%
+
+EDUCATION
+IIT Bombay
+B.Tech Computer Science
+2018 - 2022
+CGPA: 8.5
+
+PROJECTS
+Portfolio Website
+Technologies: React, Tailwind CSS
+- Built personal portfolio with dark mode
+- https://johndoe.dev
+
+CERTIFICATIONS
+AWS Certified Developer - 2023
