@@ -32,11 +32,20 @@ export default function Login() {
     setLoading(true)
     try {
       const res = await login(form)
-      setAuth(res.data, res.data.access_token)
-      toast.success("Welcome back! 👋")
-      navigate("/dashboard")
-    } catch (e) { toast.error(e.response?.data?.error ?? e.message ?? "Login failed") }
-    finally { setLoading(false) }
+      // Explicitly check if essential data and token are present
+      if (res.data && res.data.access_token) {
+        setAuth(res.data, res.data.access_token)
+        toast.success("Welcome back! 👋")
+        navigate("/dashboard")
+      } else {
+        // If response is okay but lacks token/data, treat as login failure
+        toast.error("Login failed: Missing token or user data.")
+      }
+    } catch (e) {
+      // If network error or backend error response
+      const errorMessage = e.response?.data?.error || e.message || "Login failed";
+      toast.error(errorMessage);
+    } finally { setLoading(false) }
   }
 
   

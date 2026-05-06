@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import TopBar from "../../components/layout/TopBar"
 import useAuthStore from "../../stores/authStore"
 import { toast } from "react-hot-toast"
@@ -40,6 +40,20 @@ export default function Settings() {
   const [editName, setEditName]= useState(user?.name ?? "")
   const [editPhoto,setEditPhoto]= useState(user?.photo ?? "")
   const [saving,   setSaving]  = useState(false)
+
+  // Effect to manage body scroll when modal opens/closes
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    if (editOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = originalStyle;
+    }
+    // Cleanup function to restore original style when component unmounts or editOpen changes
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, [editOpen]); // Dependency array: re-run effect when editOpen changes
 
   const plans = [
     { name:"Free",       price:"$0",  features:["5 resumes/mo","Basic JD Match","Email support"],                   current:true  },
@@ -92,11 +106,13 @@ export default function Settings() {
         .modal-overlay {
           position:fixed; inset:0; background:rgba(0,0,0,.5);
           display:flex; align-items:center; justify-content:center;
-          z-index:100; padding:24px;
+          z-index:100; /* Padding removed from here */
         }
         .modal-box {
           background:${C.card}; border:1px solid ${C.border};
           border-radius:20px; padding:28px; width:100%; max-width:440px;
+          max-height: calc(100vh - 48px); /* Added to set max height */
+          overflow-y: auto; /* Added to enable vertical scrolling */
           box-shadow:0 20px 60px rgba(0,0,0,.2);
           animation:modalIn .2s cubic-bezier(.16,1,.3,1) forwards;
         }
