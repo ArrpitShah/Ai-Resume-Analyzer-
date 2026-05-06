@@ -1,5 +1,5 @@
 
-export function jsonToText(resume) {
+export function jsonTotext(resume) {
 
   const lines = []
 
