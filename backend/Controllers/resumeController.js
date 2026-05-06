@@ -1,6 +1,6 @@
 import { fileToText } from "../Services/parserServices.js"
 import { convertToJson } from "../Services/jsonExtractor.js"
-import { jsonToText } from "../Services/jsonToText.js"
+import { jsonTotext } from "../Services/jsonTotext.js"
 import { saveResume, getResumeById, getResumesByUser, deleteResume } from "../Services/resumeService.js"
 import { generateAndSaveEmbedding } from "../Services/embeddingService.js"
 import {
