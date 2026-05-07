@@ -5,7 +5,7 @@ if (import.meta.env.PROD && !import.meta.env.VITE_API_URL) {
 }
 
 import axios from "axios"
-const api = axios.create({ baseURL: API_URL, timeout: 30000 })
+const api = axios.create({ baseURL: API_URL, timeout: 120000 })
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("access_token")
   if (token) config.headers.Authorization = `Bearer ${token}`
