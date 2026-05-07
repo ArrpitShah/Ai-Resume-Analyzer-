@@ -282,8 +282,4 @@ export default function AnalysisDetail() {
       )}
     </div>
   )
-}        </div>
-      )}
-    </div>
-  )
 }

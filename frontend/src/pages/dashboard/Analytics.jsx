@@ -192,11 +192,4 @@ const Analytics = () => {
 
 }
 
-export default Analytics/p>
-      </div>
-    </div>
-  )
-
-}
-
 export default Analytics
