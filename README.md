@@ -1,167 +1,142 @@
-# RemCheck AI
-
+RemCheck AI
 An AI-powered Resume Analyzer platform that helps users understand why their resumes get rejected and how to improve them for better ATS performance and job matching.
 
----
+🚀 Features
 
-## 🚀 Features
 
-* 📄 Resume Upload & Analysis
-* 🤖 AI-Powered Resume Feedback
-* 🎯 Job Description Matching
-* 📊 ATS Score Calculation
-* 🔍 Skills Gap Detection
-* 🛠 Resume Improvement Suggestions
-* 🔐 Authentication System
-* ⚡ Modern Responsive UI
-* ☁️ Full Stack Deployment
+📄 Resume Upload & Analysis
 
----
 
-## 🛠 Tech Stack
+🤖 AI-Powered Resume Feedback
 
-### Frontend
 
-* React.js
-* Tailwind CSS
-* Vite
-* Axios
+🎯 Job Description Matching
 
-### Backend
 
-* Node.js
-* Express.js
-* Supabase
-* Gemini AI API
+📊 ATS Score Calculation
 
-### Deployment
 
-* Vercel (Frontend)
-* Render (Backend)
+🔍 Skills Gap Detection
 
----
 
-# 📸 Project Screenshots
+🛠 Resume Improvement Suggestions
 
-## 🏠 Home Page
 
-![Home Page](./screenshots/home.png)
+🔐 Authentication System
 
----
 
-## 🔐 Login Page
+⚡ Modern Responsive UI
 
-![Login Page](./screenshots/login.png)
 
----
+☁️ Full Stack Deployment
 
-## 📄 Resume & JD Analysis
 
-![Resume JD Analysis](./screenshots/resumejd.png)
 
----
+🛠 Tech Stack
+Frontend
 
-## 📊 All Analysis Dashboard
 
-![All Analysis](./screenshots/allanalysis.png)
+React.js
 
----
 
-## ⚙️ Settings Page
+Tailwind CSS
 
-![Settings](./screenshots/settings.png)
 
----
+Vite
 
-# ⚡ Installation
 
-## Clone Repository
+Axios
 
-```bash
+
+Backend
+
+
+Node.js
+
+
+Express.js
+
+
+Supabase
+
+
+Gemini AI API
+
+
+Deployment
+
+
+Vercel (Frontend)
+
+
+Render (Backend)
+
+
+
+📸 Project Screenshots
+🏠 Home Page
+
+
+🔐 Login Page
+
+
+📄 Resume & JD Analysis
+
+
+📊 All Analysis Dashboard
+
+
+⚙️ Settings Page
+
+
+⚡ Installation
+Clone Repository
 git clone https://github.com/ArrpitShah/Ai-Resume-Analyzer-.git
-```
-
-## Go to Project Directory
-
-```bash
+Go to Project Directory
 cd Ai-Resume-Analyzer-
-```
+Install Dependencies
+Frontend
+cd frontendnpm install
+Backend
+cd backendnpm install
 
-## Install Dependencies
+🔑 Environment Variables
+Create a .env file inside backend:
+GEMINI_API_KEY=your_api_keySUPABASE_URL=your_supabase_urlSUPABASE_ANON_KEY=your_supabase_keyJWT_SECRET=your_secret
 
-### Frontend
-
-```bash
-cd frontend
-npm install
-```
-
-### Backend
-
-```bash
-cd backend
-npm install
-```
-
----
-
-# 🔑 Environment Variables
-
-Create a `.env` file inside backend:
-
-```env
-GEMINI_API_KEY=your_api_key
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_supabase_key
-JWT_SECRET=your_secret
-```
-
----
-
-# ▶️ Run Project
-
-## Frontend
-
-```bash
+▶️ Run Project
+Frontend
 npm run dev
-```
-
-## Backend
-
-```bash
+Backend
 npm run dev
-```
 
----
+🌐 Live Project
+Frontend
+RemCheck Frontend
+Backend API
+RemCheck Backend API
 
-# 🌐 Live Project
+📌 Future Improvements
 
-## Frontend
 
-[https://remcheck-web.vercel.app](https://remcheck-web.vercel.app)
+PDF Resume Generation
 
-## Backend API
 
-[https://ai-resume-analyzer-10-yb7s.onrender.com](https://ai-resume-analyzer-10-yb7s.onrender.com)
+Multi Resume Comparison
 
----
 
-# 📌 Future Improvements
+AI Interview Preparation
 
-* PDF Resume Generation
-* Multi Resume Comparison
-* AI Interview Preparation
-* Company-wise Resume Optimization
-* Advanced ATS Insights
 
----
+Company-wise Resume Optimization
 
-# 👨‍💻 Author
 
-Arpit Shah
+Advanced ATS Insights
 
----
 
-# ⭐ Support
 
+👨‍💻 Author
+Arpit Kumar
+
+⭐ Support
 If you like this project, give it a ⭐ on GitHub.
