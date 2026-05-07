@@ -265,10 +265,4 @@ export default function AllAnalyses() {
       )}
     </div>
   )
-}     )
-          })}
-        </div>
-      )}
-    </div>
-  )
 }
