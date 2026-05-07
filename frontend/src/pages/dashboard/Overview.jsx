@@ -145,8 +145,12 @@ export default function Overview() {
 
         
         console.log("[Overview] Skill count:", sk.length, sk)
-      } catch (_) { setStats({ resumes:0, jds:0 }) }
-      finally { setLoading(false) }
+      } catch (err) {
+        console.error("[Overview] Fetch error:", err)
+        setStats({ resumes: 0, jds: 0 })
+      } finally {
+        setLoading(false)
+      }
     }
     fetch()
   }, [user?.id])
@@ -356,13 +360,6 @@ export default function Overview() {
                   {selected?.id===r.id?"Selected ✓":"Click to filter"}
                 </span>
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}/div>
             </div>
           </div>
         ))}

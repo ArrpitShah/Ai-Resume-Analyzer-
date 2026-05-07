@@ -96,7 +96,7 @@ export default function ResumeUpload() {
       const fd = new FormData(); fd.append("resume", file)
       const token = localStorage.getItem("access_token")
       const res = await api.post("/api/resume/upload", fd, {
-        headers: { "Content-Type":"multipart/form-color", Authorization:`Bearer ${token}` }
+        headers: { "Content-Type":"multipart/form-data", Authorization:`Bearer ${token}` }
       })
       
       setLastResumeId(res.data.resume_id)

@@ -69,12 +69,12 @@ Redirect URLs:
 
 ## Step 5: Frontend mein localhost replace karo
 
-Saari files mein `http://localhost:5000` ko replace karo:
+Saari files mein `https://ai-resume-analyzer-10-yb7s.onrender.com` ko use karo:
 
 ```js
 
-axios.get("http://localhost:5000/api/resume/user/123")
-
+axios.get("https://ai-resume-analyzer-10-yb7s.onrender.com/api/resume/user/123")
+```
 import api from "../services/axiosInstance"
 api.get("/api/resume/user/123")
 ```
@@ -97,5 +97,5 @@ Files jahan localhost hai:
 - [ ] Netlify frontend deploy kiya
 - [ ] Netlify environment variables set kiye
 - [ ] Supabase redirect URLs update kiye
-- [ ] localhost:5000 → Railway URL replace kiya
+- [ ] localhost:5000 → Render URL replace kiya
 - [ ] Test kiya — login, upload, JD match
