@@ -129,7 +129,7 @@ export const uploadResume = async (req, res) => {
     })
 
     
-    const plainText        = jsonToText(jsonData)
+    const plainText        = jsonTotext(jsonData)
     const { resume_id }    = await saveResume(jsonData, plainText, fileInfo, user_id)
 
     

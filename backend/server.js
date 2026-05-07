@@ -21,6 +21,8 @@ validateEnv()
 
 const app = express()
 
+app.set("trust proxy", 1)
+
 app.use(helmet())
 app.use(helmet.noSniff())
 app.use(helmet.xssFilter())
