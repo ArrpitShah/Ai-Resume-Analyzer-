@@ -61,6 +61,16 @@ app.use(generalLimiter)
 app.use(sanitizeInput)
 
 
+app.get("/", (req, res) => {
+  res.json({
+    message:   "Welcome to RemCheck AI API",
+    status:    "running",
+    docs:      "Please use the frontend to interact with this API",
+    health:    "/health"
+  })
+})
+
+
 app.get("/health", (req, res) => {
   res.json({
     status:    "ok",
