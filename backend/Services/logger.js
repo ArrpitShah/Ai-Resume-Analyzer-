@@ -63,8 +63,8 @@ export async function logAI({
   await safeInsert("ai_logs", {
     user_id:           user_id          ?? null,
     analysis_id:       analysis_id      ?? null,
-    model_name:        model_name       ?? "claude-sonnet-4-20250514",
-    provider:          provider         ?? "anthropic",
+    model_name:        model_name       ?? "gemini-2.0-flash",
+    provider:          provider         ?? "google",
     prompt_tokens:     prompt_tokens    ?? null,
     completion_tokens: completion_tokens ?? null,
     total_tokens:      total_tokens     ?? null,
