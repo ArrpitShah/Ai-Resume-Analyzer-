@@ -29,7 +29,7 @@ app.use(helmet.hidePoweredBy())
 
 const allowedOrigins = (
   process.env.ALLOWED_ORIGINS ??
-  "https://remcheck-ai.vercel.app,http://localhost:3000,http://localhost:5173,http://localhost:5174"
+  "https://remcheck-web.vercel.app,https://remcheck-ai.vercel.app,http://localhost:3000,http://localhost:5173,http://localhost:5174"
 )
   .split(",")
   .map(o => o.trim())
