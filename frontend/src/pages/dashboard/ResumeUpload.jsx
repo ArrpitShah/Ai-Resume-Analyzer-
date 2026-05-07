@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 import TopBar from "../../components/layout/TopBar"
 import useAuthStore from "../../stores/authStore"
-import axios from "axios"
+import api from "../../services/axiosInstance"
 
 const PROCESS_MSGS = [
   "Extracting text from resume...",
@@ -95,8 +95,8 @@ export default function ResumeUpload() {
     try {
       const fd = new FormData(); fd.append("resume", file)
       const token = localStorage.getItem("access_token")
-      const res = await axios.post("http://localhost:5000/api/resume/upload", fd, {
-        headers: { "Content-Type":"multipart/form-data", Authorization:`Bearer ${token}` }
+      const res = await api.post("/api/resume/upload", fd, {
+        headers: { "Content-Type":"multipart/form-color", Authorization:`Bearer ${token}` }
       })
       
       setLastResumeId(res.data.resume_id)

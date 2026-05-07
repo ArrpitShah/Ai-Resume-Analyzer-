@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import TopBar from "../../components/layout/TopBar"
 import useAuthStore from "../../stores/authStore"
-import axios from "axios"
+import api from "../../services/axiosInstance"
 
 const getRatingColor = (r = "") => {
   r = r.toLowerCase()
@@ -53,8 +53,8 @@ export default function AllAnalyses() {
       const token = localStorage.getItem("access_token")
       const H = { Authorization: `Bearer ${token}` }
       const [aRes, rRes] = await Promise.allSettled([
-        axios.get(`http://localhost:5000/api/match/user/${userId}`,  { headers:H }),
-        axios.get(`http://localhost:5000/api/resume/user/${userId}`, { headers:H }),
+        api.get(`/api/match/user/${userId}`,  { headers:H }),
+        api.get(`/api/resume/user/${userId}`, { headers:H }),
       ])
       const aData = aRes.status==="fulfilled" ? aRes.value.data.data??[] : []
       const rData = rRes.status==="fulfilled" ? rRes.value.data.data??[] : []
@@ -260,6 +260,12 @@ export default function AllAnalyses() {
                 </div>
               </div>
             )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}     )
           })}
         </div>
       )}

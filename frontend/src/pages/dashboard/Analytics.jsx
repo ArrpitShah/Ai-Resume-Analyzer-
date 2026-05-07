@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import TopBar from "../../components/layout/TopBar"
 import useAuthStore from "../../stores/authStore"
-import axios from "axios"
+import api from "../../services/axiosInstance"
 
 const StatCard = ({ label, value, icon, color, loading, dm }) => (
   <div style={{
@@ -45,8 +45,8 @@ const Analytics = () => {
       try {
         const token = localStorage.getItem("access_token")
         const [resumesRes, jdsRes] = await Promise.allSettled([
-          axios.get("http://localhost:5000/api/resume/user/me", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:5000/api/jd/user/me", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/api/resume/user/me", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/api/jd/user/me", { headers: { Authorization: `Bearer ${token}` } }),
         ])
 
         const resumes = resumesRes.status === "fulfilled" ? resumesRes.value.data.data : []
@@ -186,6 +186,13 @@ const Analytics = () => {
         <p style={{ fontSize: 13, color: "#94a3b8" }}>
           Match history, trend analysis, and more insights will be available soon.
         </p>
+      </div>
+    </div>
+  )
+
+}
+
+export default Analytics/p>
       </div>
     </div>
   )

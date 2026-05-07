@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import { toast } from "react-hot-toast"
 import TopBar from "../../components/layout/TopBar"
 import useAuthStore from "../../stores/authStore"
-import axios from "axios"
+import api from "../../services/axiosInstance"
 
 const MATCH_MSGS = [
   "Uploading job description...",
@@ -77,8 +77,8 @@ export default function JDMatch() {
     if (!rid.trim())    return toast.error("Please enter Resume ID")
     setLoading(true); setResult(null); setMsgIdx(0)
     try {
-      const jdRes = await axios.post("http://localhost:5000/api/jd/upload",{text:jdText},{headers:{Authorization:`Bearer ${token}`}})
-      const mRes  = await axios.post("http://localhost:5000/api/match/analyze",{resume_id:rid,jd_id:jdRes.data.jd_id},{headers:{Authorization:`Bearer ${token}`}})
+      const jdRes = await api.post("/api/jd/upload",{text:jdText},{headers:{Authorization:`Bearer ${token}`}})
+      const mRes  = await api.post("/api/match/analyze",{resume_id:rid,jd_id:jdRes.data.jd_id},{headers:{Authorization:`Bearer ${token}`}})
       setResult(mRes.data.data); setTab("overview"); setITab("technical")
       toast.success("Analysis complete! 🎉")
     } catch(e){ toast.error(e.response?.data?.error ?? "Match failed") }

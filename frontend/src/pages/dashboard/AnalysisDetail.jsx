@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import TopBar from "../../components/layout/TopBar"
 import useAuthStore from "../../stores/authStore"
-import axios from "axios"
+import api from "../../services/axiosInstance"
 
 const ScoreRing = ({ score, size=110, color="#2563EB", label, dm }) => {
   const r = (size-14)/2
@@ -59,8 +59,8 @@ export default function AnalysisDetail() {
     const fetch = async () => {
       try {
         const token = localStorage.getItem("access_token")
-        const res = await axios.get(
-          `http://localhost:5000/api/match/${id}`,
+        const res = await api.get(
+          `/api/match/${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         )
         setData(res.data.data)
@@ -279,6 +279,10 @@ export default function AnalysisDetail() {
             </div>
           )}
         </div>
+      )}
+    </div>
+  )
+}        </div>
       )}
     </div>
   )

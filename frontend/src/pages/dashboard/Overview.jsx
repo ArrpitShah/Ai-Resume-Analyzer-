@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import TopBar from "../../components/layout/TopBar"
 import useAuthStore from "../../stores/authStore"
-import axios from "axios"
+import api from "../../services/axiosInstance"
 
 
 
@@ -126,9 +126,9 @@ export default function Overview() {
         const token = localStorage.getItem("access_token")
         const H = { Authorization:`Bearer ${token}` }
         const [rRes, jRes, aRes] = await Promise.allSettled([
-          axios.get(`http://localhost:5000/api/resume/user/${uid}`, { headers:H }),
-          axios.get(`http://localhost:5000/api/jd/user/${uid}`,     { headers:H }),
-          axios.get(`http://localhost:5000/api/match/user/${uid}`,  { headers:H }),
+          api.get(`/api/resume/user/${uid}`, { headers:H }),
+          api.get(`/api/jd/user/${uid}`,     { headers:H }),
+          api.get(`/api/match/user/${uid}`,  { headers:H }),
         ])
         const r = rRes.status==="fulfilled" ? rRes.value.data.data??[] : []
         const j = jRes.status==="fulfilled" ? jRes.value.data.data??[] : []
@@ -356,6 +356,13 @@ export default function Overview() {
                   {selected?.id===r.id?"Selected ✓":"Click to filter"}
                 </span>
               </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}/div>
             </div>
           </div>
         ))}
