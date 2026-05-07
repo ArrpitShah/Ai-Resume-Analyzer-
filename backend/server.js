@@ -29,22 +29,26 @@ app.use(helmet.hidePoweredBy())
 
 const allowedOrigins = (
   process.env.ALLOWED_ORIGINS ??
-  "http://localhost:3000,http://localhost:5173,http://localhost:5174"
+  "https://remcheck-ai.vercel.app,http://localhost:3000,http://localhost:5173,http://localhost:5174"
 )
   .split(",")
   .map(o => o.trim())
 
 app.use(cors({
-  origin: (origin, callback) => {
-    
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true)
-    if (allowedOrigins.includes(origin)) return callback(null, true)
-    console.warn(`[CORS] Blocked origin: ${origin}`)
-    callback(new Error(`CORS: Origin ${origin} not allowed`))
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes("*")) {
+      callback(null, true)
+    } else {
+      console.warn(`[CORS] Blocked origin: ${origin}`)
+      callback(new Error("Not allowed by CORS"))
+    }
   },
-  methods:        ["GET", "POST", "DELETE", "OPTIONS", "PUT", "PATCH"],
+  methods: ["GET", "POST", "DELETE", "OPTIONS", "PUT", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials:    true,
+  credentials: true,
 }))
 
 
