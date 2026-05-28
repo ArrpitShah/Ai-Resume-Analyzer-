@@ -6,6 +6,7 @@ import {
   fetchResumeById,
   fetchResumesByUser,
   removeResume,
+  fetchResumeVersions,
 } from "../Controllers/resumeController.js"
 import {
   resumeUploadLimiter,
@@ -40,8 +41,14 @@ const upload = multer({
 
 
 router.post("/upload", protect, resumeUploadLimiter, upload.single("resume"), validateTextInput(100000), uploadResume)
+router.get("/my-resumes", protect, (req, res) => {
+  // Redirect internal call to the standard handler
+  req.params.userId = req.user.id
+  fetchResumesByUser(req, res)
+})
 router.get("/user/:userId", protect, validateUUID, fetchResumesByUser)
 router.get("/:id", protect, validateUUID, fetchResumeById)
+router.get("/:id/versions", protect, validateUUID, fetchResumeVersions)
 router.delete("/:id", protect, validateUUID, removeResume)
 
 export default router

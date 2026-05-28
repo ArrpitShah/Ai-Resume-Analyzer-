@@ -7,11 +7,13 @@ const NAV = [
   { to:"/dashboard",          end:true,  label:"Overview",      icon:<svg width="18" height="18" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2" stroke="currentColor" strokeWidth="1.8"/><rect x="14" y="3" width="7" height="7" rx="2" stroke="currentColor" strokeWidth="1.8"/><rect x="3" y="14" width="7" height="7" rx="2" stroke="currentColor" strokeWidth="1.8"/><rect x="14" y="14" width="7" height="7" rx="2" stroke="currentColor" strokeWidth="1.8"/></svg> },
   { to:"/dashboard/upload",   end:false, label:"Upload Resume", icon:<svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M14 2v6h6M12 18v-6M9 15l3-3 3 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg> },
   { to:"/dashboard/jd-match", end:false, label:"JD Match",      icon:<svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8"/><path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg> },
+  { to:"/dashboard/cover-letter", end:false, label:"Cover Letter", icon:<svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg> },
   { to:"/dashboard/analyses", end:false, label:"All Analyses",  icon:<svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg> },
   { to:"/dashboard/settings", end:false, label:"Settings",      icon:<svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" strokeWidth="1.8"/></svg> },
+  { to:"/dashboard/admin",    end:false, label:"Admin",         icon:<svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeJoin="round"/></svg> },
 ]
 
-const Sidebar = ({ collapsed, setCollapsed }) => {
+const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
   const navigate  = useNavigate()
   const clearAuth = useAuthStore((s) => s.clearAuth)
   const user      = useAuthStore((s) => s.user)
@@ -40,9 +42,19 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
           display:flex; flex-direction:column;
           padding:18px 10px; position:fixed;
           top:0; left:0; z-index:50;
-          transition:width 0.3s cubic-bezier(0.4,0,0.2,1);
+          transition:width 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.3s cubic-bezier(0.4,0,0.2,1);
           overflow:hidden;
         }
+
+        @media (max-width: 767px) {
+          .sb {
+            width: 256px !important;
+            transform: translateX(${mobileOpen ? '0' : '-100%'});
+          }
+          .cb { display: none !important; }
+          .nl { opacity: 1 !important; pointer-events: auto !important; }
+        }
+
         .ni {
           display:flex; align-items:center; gap:11px;
           padding:9px 12px; border-radius:10px;
@@ -128,7 +140,12 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         {}
         <div style={{ display:"flex", alignItems:"center", justifyContent:collapsed?"center":"space-between", marginBottom:24, paddingLeft:collapsed?0:2 }}>
           {!collapsed && (
-            <div style={{ display:"flex", alignItems:"center", gap:9 }}>
+            <div 
+              onClick={() => navigate("/dashboard")}
+              style={{ display:"flex", alignItems:"center", gap:9, cursor:"pointer", transition:"opacity 0.15s" }}
+              onMouseOver={(e)=>e.currentTarget.style.opacity="0.8"}
+              onMouseOut={(e)=>e.currentTarget.style.opacity="1"}
+            >
               <div style={{ width:32, height:32, borderRadius:10, background:"linear-gradient(135deg,#2563EB,#6366f1)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
                   <path d="M9 12h6M9 16h6M9 8h6M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>

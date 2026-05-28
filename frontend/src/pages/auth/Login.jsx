@@ -14,6 +14,13 @@ export default function Login() {
   const [gLoading, setGLoading] = useState(false)
   const [showPw, setShowPw]     = useState(false)
   const [focus, setFocus]       = useState("")
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   useEffect(() => {
     if (darkMode) document.documentElement.classList.add("dark")
@@ -97,10 +104,12 @@ export default function Login() {
         .dark .h1-login{color:#f9fafb;}
         .sub-login{font-size:14px;color:#64748b;}
         .dark .sub-login{color:#94a3b8;}
-      `}</style>
+        .logo-rem{color:#0f172a;}
+        .dark .logo-rem{color:#f8fafc;}
+        `}</style>
 
-      {/* Form Side */}
-      <div className="lbg" style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"48px 24px" }}>
+        {/* Form Side */}
+        <div className="lbg" style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"48px 24px" }}>
         <div className="fu" style={{ width:"100%", maxWidth:400 }}>
 
           {/* Logo */}
@@ -110,11 +119,10 @@ export default function Login() {
                 <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
               </div>
               <span style={{ fontSize:22, fontWeight:400, fontFamily:"'Lilita One',sans-serif", letterSpacing:"-0.3px" }}>
-                <span style={{ color:"#0f172a" }} className="dark:text-white">Rem</span><span style={{ color:"#2563EB" }}>Check</span>
+                <span className="logo-rem">Rem</span><span style={{ color:"#2563EB" }}>Check</span>
               </span>
             </Link>
           </div>
-
           <div style={{ marginBottom:28 }}>
             <h1 className="h1-login">Welcome back</h1>
             <p className="sub-login">Sign in to your RemCheck account</p>
@@ -201,31 +209,33 @@ export default function Login() {
       </div>
 
       {/* Visual Side */}
-      <div className="hidden lg:flex" style={{ flex:1, alignItems:"center", justifyContent:"center", position:"relative", overflow:"hidden", background:"linear-gradient(135deg,#1e3a8a 0%,#2563EB 45%,#6366f1 100%)" }}>
-        <div style={{ position:"absolute", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle,rgba(6,182,212,.25),transparent)", top:"-8%", right:"-8%" }}/>
-        <div style={{ position:"absolute", width:300, height:300, borderRadius:"50%", background:"radial-gradient(circle,rgba(99,102,241,.3),transparent)", bottom:"5%", left:"5%" }}/>
-        <div style={{ position:"relative", zIndex:1, maxWidth:380, padding:"0 40px" }}>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:10, marginBottom:28 }}>
-            <div style={{ width:44, height:44, borderRadius:13, background:"rgba(255,255,255,.15)", backdropFilter:"blur(8px)", border:"1px solid rgba(255,255,255,.25)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
-            </div>
-            <span style={{ fontSize:24, fontWeight:400, fontFamily:"'Lilita One',sans-serif" }}>
-              <span style={{ color:"#ffffff" }}>Rem</span><span style={{ color:"#93c5fd" }}>Check</span>
-            </span>
-          </div>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(255,255,255,.1)", backdropFilter:"blur(8px)", border:"1px solid rgba(255,255,255,.2)", borderRadius:100, padding:"7px 16px", fontSize:13, fontWeight:500, marginBottom:22, color:"#fff" }}>✨ AI-Powered Resume Platform</div>
-          <h2 style={{ fontSize:34, fontWeight:400, fontFamily:"'Lilita One',sans-serif", lineHeight:1.2, marginBottom:14, color:"#fff" }}>Analyze. Match.<br/>Get Hired.</h2>
-          <p style={{ fontSize:15, color:"rgba(219,234,254,.9)", lineHeight:1.75, marginBottom:32 }}>Upload your resume, match it with job descriptions, and get AI-powered insights.</p>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10 }}>
-            {[{v:"98%",l:"ATS Score"},{v:"3x",l:"Interview Rate"},{v:"10k+",l:"Users"}].map(s=>(
-              <div key={s.l} style={{ background:"rgba(255,255,255,.1)", backdropFilter:"blur(8px)", border:"1px solid rgba(255,255,255,.15)", borderRadius:14, padding:"14px 12px", textAlign:"center" }}>
-                <p style={{ fontSize:22, fontWeight:400, fontFamily:"'Lilita One',sans-serif", color:"#fff" }}>{s.v}</p>
-                <p style={{ fontSize:11, color:"rgba(191,219,254,.8)", marginTop:3 }}>{s.l}</p>
+      {!isMobile && (
+        <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", position:"relative", overflow:"hidden", background:"linear-gradient(135deg,#1e3a8a 0%,#2563EB 45%,#6366f1 100%)" }}>
+          <div style={{ position:"absolute", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle,rgba(6,182,212,.25),transparent)", top:"-8%", right:"-8%" }}/>
+          <div style={{ position:"absolute", width:300, height:300, borderRadius:"50%", background:"radial-gradient(circle,rgba(99,102,241,.3),transparent)", bottom:"5%", left:"5%" }}/>
+          <div style={{ position:"relative", zIndex:1, maxWidth:380, padding:"0 40px" }}>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:10, marginBottom:28 }}>
+              <div style={{ width:44, height:44, borderRadius:13, background:"rgba(255,255,255,.15)", backdropFilter:"blur(8px)", border:"1px solid rgba(255,255,255,.25)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
               </div>
-            ))}
+              <span style={{ fontSize:24, fontWeight:400, fontFamily:"'Lilita One',sans-serif" }}>
+                <span style={{ color:"#ffffff" }}>Rem</span><span style={{ color:"#93c5fd" }}>Check</span>
+              </span>
+            </div>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(255,255,255,.1)", backdropFilter:"blur(8px)", border:"1px solid rgba(255,255,255,.2)", borderRadius:100, padding:"7px 16px", fontSize:13, fontWeight:500, marginBottom:22, color:"#fff" }}>✨ AI-Powered Resume Platform</div>
+            <h2 style={{ fontSize:34, fontWeight:400, fontFamily:"'Lilita One',sans-serif", lineHeight:1.2, marginBottom:14, color:"#fff" }}>Analyze. Match.<br/>Get Hired.</h2>
+            <p style={{ fontSize:15, color:"rgba(219,234,254,.9)", lineHeight:1.75, marginBottom:32 }}>Upload your resume, match it with job descriptions, and get AI-powered insights.</p>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10 }}>
+              {[{v:"98%",l:"ATS Score"},{v:"3x",l:"Interview Rate"},{v:"10k+",l:"Users"}].map(s=>(
+                <div key={s.l} style={{ background:"rgba(255,255,255,.1)", backdropFilter:"blur(8px)", border:"1px solid rgba(255,255,255,.15)", borderRadius:14, padding:"14px 12px", textAlign:"center" }}>
+                  <p style={{ fontSize:22, fontWeight:400, fontFamily:"'Lilita One',sans-serif", color:"#fff" }}>{s.v}</p>
+                  <p style={{ fontSize:11, color:"rgba(191,219,254,.8)", marginTop:3 }}>{s.l}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

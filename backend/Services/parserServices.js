@@ -176,6 +176,7 @@ const TECH_KEYWORDS = new Set([
 function extractSkills(sections, fullText) {
   const raw = sections.skills ?? ""
   const collected = new Set()
+  const lowerFullText = fullText.toLowerCase()
 
   if (raw) {
     raw
@@ -187,7 +188,9 @@ function extractSkills(sections, fullText) {
 
  
   for (const kw of TECH_KEYWORDS) {
-    if (lower.includes(kw)) collected.add(titleCase(kw))
+    if (lowerFullText.includes(kw)) {
+      collected.add(kw.charAt(0).toUpperCase() + kw.slice(1))
+    }
   }
 
   return [...collected].filter(Boolean)

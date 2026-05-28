@@ -125,6 +125,28 @@ export function validateMatchInput(req, res, next) {
 }
 
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+export function validateAuth(req, res, next) {
+  const { email, password, fullName } = req.body
+  const isSignup = req.path.includes("signup")
+
+  if (!email || !EMAIL_REGEX.test(email)) {
+    return res.status(400).json({ error: "Please provide a valid email address." })
+  }
+
+  if (!password || password.length < 6) {
+    return res.status(400).json({ error: "Password must be at least 6 characters long." })
+  }
+
+  if (isSignup && (!fullName || fullName.trim().length < 2)) {
+    return res.status(400).json({ error: "Full name is required and must be at least 2 characters." })
+  }
+
+  next()
+}
+
+
 export function errorHandler(err, req, res, next) {
   console.error("[ErrorHandler]", err.message)
 

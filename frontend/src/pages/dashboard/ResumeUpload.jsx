@@ -61,7 +61,14 @@ export default function ResumeUpload() {
   const [msgIdx, setMsgIdx]     = useState(0)
   const [success, setSuccess]   = useState(false)
   const [greeting]              = useState(() => GREETINGS[Math.floor(Math.random() * GREETINGS.length)])
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const timerRef = useRef(null)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   const dm = darkMode
   const C = {
@@ -89,19 +96,51 @@ export default function ResumeUpload() {
     if (f) setFile(f)
   }
 
+  const [parentId, setParentId] = useState(null)
+
   const handleUpload = async () => {
     if (!file) return toast.error("Please select a file first")
     setLoading(true); setResult(null); setMsgIdx(0)
     try {
-      const fd = new FormData(); fd.append("resume", file)
+      const fd = new FormData(); 
+      fd.append("resume", file)
+      if (parentId) fd.append("parent_id", parentId)
+
       const token = localStorage.getItem("access_token")
       const res = await api.post("/api/resume/upload", fd, {
         headers: { "Content-Type":"multipart/form-data", Authorization:`Bearer ${token}` }
       })
       
       setLastResumeId(res.data.resume_id)
-      setLastResumeData(res.data)
+      setLastResumeData(res.data.data) // jsonData
       setResult(res.data); setSuccess(true)
+      setParentId(null) // Reset after success
+
+      // ✅ Auto JD Match (Pro Feature)
+      const profRes = await api.get("/api/payment/profile")
+      const profile = profRes.data.data
+      
+      if (profile.subscription_status === "pro" && profile.auto_jd_match) {
+        toast.loading("Auto-matching with latest JD...", { duration: 2000 })
+        
+        // 1. Get latest JD
+        const jdsRes = await api.get(`/api/jd/user/${user.id}`)
+        const latestJd = jdsRes.data.data?.[0]
+
+        if (latestJd) {
+          // 2. Trigger analysis
+          const mRes = await api.post("/api/match/analyze", {
+            resume_id: res.data.resume_id,
+            jd_id: latestJd.id
+          })
+          toast.success(`Auto-matched with ${latestJd.title}!`)
+          // 3. Redirect to analysis detail
+          setTimeout(() => navigate(`/dashboard/analyses/${mRes.data.data.analysis_id}`), 1500)
+        } else {
+          toast.error("No job description found to auto-match.")
+        }
+      }
+
       setTimeout(() => setSuccess(false), 4000)
       toast.success("Resume analyzed! 🎉")
     } catch (e) { toast.error(e.response?.data?.error ?? "Upload failed") }
@@ -111,9 +150,11 @@ export default function ResumeUpload() {
   const displayName = result ? generateDisplayName(result.data?.basic_info?.name, result.resume_id) : ""
 
   return (
-    <div>
+    <div className="container-px">
       <style>{`
-        .rc-card { background:${C.card}; border:1px solid ${C.border}; border-radius:16px; }
+        .rc-card { background:${C.card}; border:1px solid ${C.border}; border-radius:16px; padding:20px; }
+        @media (max-width: 767px) { .rc-card { padding: 16px !important; } }
+        
         @keyframes fadeSlideUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
         .welcome-anim { animation:fadeSlideUp 0.5s cubic-bezier(.16,1,.3,1) forwards; }
         .greeting-text {
@@ -136,16 +177,24 @@ export default function ResumeUpload() {
         @keyframes borderSpin{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
         .upload-wrap { position:relative; border-radius:20px; padding:2px; }
         .upload-wrap.active::before { content:''; position:absolute; inset:0; border-radius:20px; background:linear-gradient(90deg,#2563EB,#6366f1,#06b6d4,#2563EB); background-size:300% 300%; animation:borderSpin 2.5s ease infinite; z-index:0; }
-        .upload-zone { border-radius:18px; padding:52px 24px; text-align:center; cursor:pointer; transition:all .2s; position:relative; z-index:1; background:${C.card}; }
+        .upload-zone { border-radius:18px; padding:32px 16px; text-align:center; cursor:pointer; transition:all .2s; position:relative; z-index:1; background:${C.card}; }
+        @media (min-width: 768px) { .upload-zone { padding: 52px 24px; } }
+
         .upload-zone.plain { border:2px dashed ${dm?"#374151":"#e2e8f0"}; }
         .upload-zone.plain:hover,.upload-zone.plain.drag { border-color:#2563EB; background:${dm?"rgba(37,99,235,.06)":"#eff6ff"}; }
         .upload-zone.hasfile { background:${dm?"rgba(16,185,129,.05)":"#f0fdf4"}; }
-        .upload-icon { width:68px; height:68px; border-radius:18px; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; }
+        .upload-icon { width:56px; height:56px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; }
+        @media (min-width: 768px) { .upload-icon { width:68px; height:68px; border-radius:18px; } }
+
         @keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}} .icon-anim{animation:iconFloat 2.5s ease-in-out infinite;}
-        .ubtn { padding:13px 36px; border-radius:12px; border:none; background:#2563EB; color:#fff; font-size:15px; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; transition:all .2s; box-shadow:0 4px 16px rgba(37,99,235,.3); display:inline-flex; align-items:center; gap:8px; }
+        .ubtn { padding:13px 24px; border-radius:12px; border:none; background:#2563EB; color:#fff; font-size:14px; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; transition:all .2s; box-shadow:0 4px 16px rgba(37,99,235,.3); display:inline-flex; align-items:center; gap:8px; width: 100%; justify-content: center; }
+        @media (min-width: 768px) { .ubtn { width: auto; padding: 13px 36px; font-size: 15px; } }
+
         .ubtn:hover:not(:disabled){background:#1d4ed8;transform:translateY(-1px);}
         .ubtn:disabled{opacity:.5;cursor:not-allowed;}
-        .mbtn { padding:12px 24px; border-radius:12px; border:1px solid ${dm?"rgba(16,185,129,.2)":"#bbf7d0"}; background:${dm?"rgba(16,185,129,.1)":"#f0fdf4"}; color:${dm?"#34d399":"#059669"}; font-size:14px; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; }
+        .mbtn { padding:12px 24px; border-radius:12px; border:1px solid ${dm?"rgba(16,185,129,.2)":"#bbf7d0"}; background:${dm?"rgba(16,185,129,.1)":"#f0fdf4"}; color:${dm?"#34d399":"#059669"}; font-size:14px; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; width: 100%; }
+        @media (min-width: 768px) { .mbtn { width: auto; } }
+
         .mbtn:hover{background:${dm?"rgba(16,185,129,.15)":"#dcfce7"};}
         @keyframes msgFade{0%{opacity:0;transform:translateY(6px)}20%{opacity:1;transform:translateY(0)}80%{opacity:1}100%{opacity:0;transform:translateY(-6px)}}
         .proc-msg{animation:msgFade 1.8s ease forwards;}
@@ -157,6 +206,12 @@ export default function ResumeUpload() {
         .info-label{font-size:11px;color:#94a3b8;margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
         .info-val{font-size:13px;color:${C.text};font-weight:500;}
         .sec-label{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;}
+
+        .res-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        @media (min-width: 768px) { .res-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .upload-btns { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-bottom: 32px; }
+        @media (min-width: 768px) { .upload-btns { flex-direction: row; justify-content: center; } }
       `}</style>
 
       <TopBar title="" subtitle="" />
@@ -168,14 +223,14 @@ export default function ResumeUpload() {
             {new Date().getHours() < 12 ? "☀️ Good morning" : new Date().getHours() < 17 ? "👋 Good afternoon" : "🌙 Good evening"},{" "}
             <span style={{ color:C.text, fontWeight:600 }}>{firstName}</span>
           </p>
-          <h1 style={{ fontSize:32, fontWeight:700, fontFamily:"Satoshi,Inter,sans-serif", letterSpacing:"-0.5px", lineHeight:1.2, marginBottom:10, color:C.text }}>
+          <h1 style={{ fontSize:28, fontWeight:700, fontFamily:"Satoshi,Inter,sans-serif", letterSpacing:"-0.5px", lineHeight:1.2, marginBottom:10, color:C.text }}>
             <span className="greeting-text">{greeting}</span>
           </h1>
-          <p style={{ fontSize:15, color:C.muted, maxWidth:480, margin:"0 auto 24px", lineHeight:1.6 }}>
+          <p style={{ fontSize:14, color:C.muted, maxWidth:480, margin:"0 auto 24px", lineHeight:1.6 }}>
             Drop your resume below and let AI extract your skills, experience, and insights — in seconds.
           </p>
           <div style={{ display:"flex", flexWrap:"wrap", gap:8, justifyContent:"center" }}>
-            {["📄 PDF supported","📝 DOCX supported","⚡ AI powered","🔒 Secure & private"].map(c=>(
+            {["📄 PDF","📝 DOCX","⚡ AI powered"].map(c=>(
               <span key={c} className="suggestion-chip">{c}</span>
             ))}
           </div>
@@ -198,7 +253,7 @@ export default function ResumeUpload() {
                 <div className="upload-icon icon-anim" style={{ background:"#dcfce7" }}>
                   <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="#10b981" strokeWidth="1.8" strokeLinecap="round"/><path d="M14 2v6h6M9 13l2 2 4-4" stroke="#10b981" strokeWidth="1.8" strokeLinecap="round"/></svg>
                 </div>
-                <p style={{ fontSize:17, fontWeight:600, color:"#059669", marginBottom:4, fontFamily:"Satoshi,Inter,sans-serif" }}>{file.name}</p>
+                <p style={{ fontSize:16, fontWeight:600, color:"#059669", marginBottom:4, fontFamily:"Satoshi,Inter,sans-serif", wordBreak:"break-all" }}>{file.name}</p>
                 <p style={{ fontSize:13, color:C.muted }}>{(file.size/1024).toFixed(1)} KB — Click to change</p>
               </div>
             ) : (
@@ -209,34 +264,48 @@ export default function ResumeUpload() {
                 <p style={{ fontSize:17, fontWeight:600, color:C.text, marginBottom:6, fontFamily:"Satoshi,Inter,sans-serif" }}>
                   Drop your resume here
                 </p>
-                <p style={{ fontSize:13, color:C.muted }}>or click to browse &nbsp;•&nbsp; PDF, DOCX, DOC, TXT &nbsp;•&nbsp; Max 5MB</p>
+                <p style={{ fontSize:13, color:C.muted }}>or click to browse &nbsp;•&nbsp; PDF, DOCX, TXT</p>
               </div>
             )}
           </div>
         </div>
 
         {loading && (
-          <div className="rc-card animate-fade-in" style={{ padding:"24px", marginBottom:20, textAlign:"center" }}>
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:12, marginBottom:14 }}>
-              <svg className="sp" width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke={dm?"#374151":"#e2e8f0"} strokeWidth="4"/><path d="M12 2a10 10 0 0110 10" stroke="#2563EB" strokeWidth="4" strokeLinecap="round"/></svg>
-              <span key={msgIdx} className="proc-msg gradient-text" style={{ fontSize:15, fontWeight:600, fontFamily:"Satoshi,Inter,sans-serif" }}>
-                {PROCESS_MSGS[msgIdx]}
-              </span>
+          <div className="animate-fade-in" style={{ display:"flex", flexDirection:"column", gap:20, marginBottom:32 }}>
+            <div className="rc-card" style={{ padding:"20px", textAlign:"center" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:12, marginBottom:14 }}>
+                <svg className="sp" width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke={dm?"#374151":"#e2e8f0"} strokeWidth="4"/><path d="M12 2a10 10 0 0110 10" stroke="#2563EB" strokeWidth="4" strokeLinecap="round"/></svg>
+                <span key={msgIdx} className="proc-msg gradient-text" style={{ fontSize:14, fontWeight:600, fontFamily:"Satoshi,Inter,sans-serif" }}>
+                  {PROCESS_MSGS[msgIdx]}
+                </span>
+              </div>
+              <div style={{ height:4, background:dm?"#1f2937":"#f1f5f9", borderRadius:4, overflow:"hidden" }}>
+                <div style={{ height:"100%", background:"linear-gradient(90deg,#2563EB,#6366f1)", borderRadius:4, width:`${((msgIdx+1)/PROCESS_MSGS.length)*100}%`, transition:"width 1.8s ease" }}/>
+              </div>
             </div>
-            <div style={{ height:4, background:dm?"#1f2937":"#f1f5f9", borderRadius:4, overflow:"hidden" }}>
-              <div style={{ height:"100%", background:"linear-gradient(90deg,#2563EB,#6366f1)", borderRadius:4, width:`${((msgIdx+1)/PROCESS_MSGS.length)*100}%`, transition:"width 1.8s ease" }}/>
+
+            <div className="res-grid">
+              {[1,2,3].map(i=>(
+                <div key={i} className="rc-card" style={{ padding:20, height:220 }}>
+                  <div className="skeleton" style={{ height:12, width:"40%", marginBottom:18 }}/>
+                  <div className="skeleton" style={{ height:10, width:"80%", marginBottom:12 }}/>
+                  <div className="skeleton" style={{ height:10, width:"60%", marginBottom:12 }}/>
+                  <div className="skeleton" style={{ height:10, width:"90%", marginBottom:12 }}/>
+                  <div className="skeleton" style={{ height:10, width:"70%" }}/>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        <div style={{ display:"flex", gap:12, justifyContent:"center", marginBottom:32 }}>
+        <div className="upload-btns">
           <button className="ubtn" onClick={handleUpload} disabled={!file||loading}>
             {loading
               ? <><svg className="sp" width="15" height="15" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" strokeWidth="4"/><path d="M12 2a10 10 0 0110 10" stroke="#fff" strokeWidth="4" strokeLinecap="round"/></svg>Analyzing...</>
               : <><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>Upload & Analyze</>
             }
           </button>
-          {result && (
+          {result && !loading && (
             <button className="mbtn animate-fade-in" onClick={()=>navigate("/dashboard/jd-match")}>
               ✓ Match with JD →
             </button>
@@ -252,24 +321,24 @@ export default function ResumeUpload() {
               <div style={{ width:32, height:32, borderRadius:8, background:"#dcfce7", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round"/></svg>
               </div>
-              <div>
-                <p style={{ fontSize:14, fontWeight:600, color:"#059669" }}>Resume analyzed successfully!</p>
-                <p style={{ fontSize:12, color:"#6b7280" }}>All data saved. Ready to match with job descriptions.</p>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize:14, fontWeight:600, color:"#059669" }}>Success!</p>
+                <p style={{ fontSize:12, color:"#6b7280" }}>Ready to match with job descriptions.</p>
               </div>
             </div>
           )}
 
-          <div style={{ background:dm?"rgba(37,99,235,.1)":"#eff6ff", border:"1px solid #bfdbfe", borderRadius:14, padding:"14px 20px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-            <div>
+          <div style={{ background:dm?"rgba(37,99,235,.1)":"#eff6ff", border:"1px solid #bfdbfe", borderRadius:14, padding:"14px 20px", display:"flex", alignItems:"center", justifyContent:"space-between", gap: 12 }}>
+            <div style={{ overflow: "hidden" }}>
               <p style={{ fontSize:11, color:"#3b82f6", fontWeight:600, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:3 }}>Candidate ID</p>
-              <p style={{ fontSize:14, color:dm?"#93c5fd":"#1d4ed8", fontWeight:600, fontFamily:"Satoshi,Inter,sans-serif" }}>{displayName}</p>
+              <p style={{ fontSize:14, color:dm?"#93c5fd":"#1d4ed8", fontWeight:600, fontFamily:"Satoshi,Inter,sans-serif", overflow: "hidden", textOverflow: "ellipsis" }}>{displayName}</p>
             </div>
-            <button className="copy-btn" onClick={()=>{navigator.clipboard.writeText(result.resume_id);toast.success("Resume ID copied!")}}>
-              Copy Raw ID
+            <button className="copy-btn" onClick={()=>{navigator.clipboard.writeText(result.resume_id);toast.success("Resume ID copied!")}} style={{ flexShrink: 0 }}>
+              Copy ID
             </button>
           </div>
 
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16 }}>
+          <div className="res-grid">
             <div className="rc-card" style={{ padding:20 }}>
               <p className="sec-label">Candidate Overview</p>
               {[
@@ -281,7 +350,7 @@ export default function ResumeUpload() {
               ].filter(x=>x.v).map(item=>(
                 <div key={item.l} style={{ marginBottom:12 }}>
                   <p className="info-label">{item.l}</p>
-                  <p className="info-val">{item.v}</p>
+                  <p className="info-val" style={{ wordBreak: "break-all" }}>{item.v}</p>
                 </div>
               ))}
             </div>

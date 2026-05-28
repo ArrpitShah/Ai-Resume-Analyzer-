@@ -14,8 +14,12 @@ export default function Signup() {
   const [gLoading, setGLoading] = useState(false)
   const [showPw, setShowPw] = useState(false)
   const [focus, setFocus]   = useState("")
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
   }, [])
 
   const validate = () => {
@@ -70,49 +74,53 @@ export default function Signup() {
         @keyframes sp{to{transform:rotate(360deg)}} .sp{animation:sp 1s linear infinite;}
         @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}} .logo-float{animation:fl 3s ease-in-out infinite;}
         @keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}} .fu{animation:fu .45s cubic-bezier(.16,1,.3,1) forwards;}
-      `}</style>
+        .logo-rem{color:#0f172a;}
+        .dark .logo-rem{color:#f8fafc;}
+        .dark .lbg{background:#0A0F1E;}
+        `}</style>
 
-      {/* Visual side */}
-      <div className="hidden lg:flex" style={{ flex:1, alignItems:"center", justifyContent:"center", position:"relative", overflow:"hidden", background:"linear-gradient(135deg,#4338ca 0%,#6366f1 50%,#2563EB 100%)" }}>
-        <div style={{ position:"absolute", width:350, height:350, borderRadius:"50%", background:"radial-gradient(circle,rgba(6,182,212,.2),transparent)", bottom:"-5%", left:"-5%" }}/>
-        <div style={{ position:"absolute", width:250, height:250, borderRadius:"50%", background:"radial-gradient(circle,rgba(37,99,235,.25),transparent)", top:"5%", right:"10%" }}/>
-        <div style={{ position:"relative", zIndex:1, maxWidth:380, padding:"0 40px", color:"#fff" }}>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(255,255,255,.1)", backdropFilter:"blur(8px)", border:"1px solid rgba(255,255,255,.2)", borderRadius:100, padding:"7px 16px", fontSize:13, fontWeight:500, marginBottom:22 }}>🚀 Join thousands of professionals</div>
-          <h2 style={{ fontSize:34, fontWeight:700, fontFamily:"Satoshi,Inter,sans-serif", lineHeight:1.2, marginBottom:14, letterSpacing:"-0.5px" }}>
-            Start your career journey today
-          </h2>
-          <p style={{ fontSize:15, color:"rgba(219,234,254,.9)", lineHeight:1.75, marginBottom:28 }}>
-            AI-powered resume analysis, smart JD matching, and personalized interview prep — all in one place.
-          </p>
-          {[
-            "AI-powered resume parsing & analysis",
-            "Smart JD matching with skill gap analysis",
-            "Personalized interview questions",
-            "ATS score optimization",
-          ].map((f,i) => (
-            <div key={i} style={{ display:"flex", alignItems:"center", gap:10, marginBottom:13 }}>
-              <div style={{ width:22, height:22, borderRadius:7, background:"rgba(255,255,255,.15)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:700, flexShrink:0 }}>✓</div>
-              <p style={{ fontSize:14, color:"rgba(219,234,254,.9)" }}>{f}</p>
+        {/* Visual side */}
+        {!isMobile && (
+          <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", position:"relative", overflow:"hidden", background:"linear-gradient(135deg,#4338ca 0%,#6366f1 50%,#2563EB 100%)" }}>
+            <div style={{ position:"absolute", width:350, height:350, borderRadius:"50%", background:"radial-gradient(circle,rgba(6,182,212,.2),transparent)", bottom:"-5%", left:"-5%" }}/>
+            <div style={{ position:"absolute", width:250, height:250, borderRadius:"50%", background:"radial-gradient(circle,rgba(37,99,235,.25),transparent)", top:"5%", right:"10%" }}/>
+            <div style={{ position:"relative", zIndex:1, maxWidth:380, padding:"0 40px", color:"#fff" }}>
+              <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:"rgba(255,255,255,.1)", backdropFilter:"blur(8px)", border:"1px solid rgba(255,255,255,.2)", borderRadius:100, padding:"7px 16px", fontSize:13, fontWeight:500, marginBottom:22 }}>🚀 Join thousands of professionals</div>
+              <h2 style={{ fontSize:34, fontWeight:700, fontFamily:"Satoshi,Inter,sans-serif", lineHeight:1.2, marginBottom:14, letterSpacing:"-0.5px" }}>
+                Start your career journey today
+              </h2>
+              <p style={{ fontSize:15, color:"rgba(219,234,254,.9)", lineHeight:1.75, marginBottom:28 }}>
+                AI-powered resume analysis, smart JD matching, and personalized interview prep — all in one place.
+              </p>
+              {[
+                "AI-powered resume parsing & analysis",
+                "Smart JD matching with skill gap analysis",
+                "Personalized interview questions",
+                "ATS score optimization",
+              ].map((f,i) => (
+                <div key={i} style={{ display:"flex", alignItems:"center", gap:10, marginBottom:13 }}>
+                  <div style={{ width:22, height:22, borderRadius:7, background:"rgba(255,255,255,.15)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:700, flexShrink:0 }}>✓</div>
+                  <p style={{ fontSize:14, color:"rgba(219,234,254,.9)" }}>{f}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        )}
 
-      {/* Form side */}
-      <div className="lbg" style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"48px 24px" }}>
+        {/* Form side */}
+        <div className="lbg" style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"48px 24px" }}>
         <div className="fu" style={{ width:"100%", maxWidth:400 }}>
 
-          <div style={{ marginBottom:36 }}>
-            <Link to="/" style={{ display:"inline-flex", alignItems:"center", gap:10, textDecoration:"none" }}>
-              <div className="logo-float" style={{ width:40, height:40, borderRadius:12, background:"linear-gradient(135deg,#2563EB,#6366f1)", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 14px rgba(37,99,235,.35)" }}>
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
-              </div>
-              <span style={{ fontSize:22, fontWeight:700, fontFamily:"Satoshi,Inter,sans-serif", color:"#0f172a", letterSpacing:"-0.3px" }}>
-                Rem<span style={{ color:"#2563EB" }}>Check</span>
-              </span>
-            </Link>
-          </div>
-
+         <div style={{ marginBottom:36 }}>
+           <Link to="/" style={{ display:"inline-flex", alignItems:"center", gap:10, textDecoration:"none" }}>
+             <div className="logo-float" style={{ width:40, height:40, borderRadius:12, background:"linear-gradient(135deg,#2563EB,#6366f1)", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 14px rgba(37,99,235,.35)" }}>
+               <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
+             </div>
+             <span style={{ fontSize:22, fontWeight:700, fontFamily:"Satoshi,Inter,sans-serif", letterSpacing:"-0.3px" }}>
+               <span className="logo-rem">Rem</span><span style={{ color:"#2563EB" }}>Check</span>
+             </span>
+           </Link>
+         </div>
           <div style={{ marginBottom:28 }}>
             <h1 style={{ fontSize:28, fontWeight:700, fontFamily:"Satoshi,Inter,sans-serif", color:"#0f172a", letterSpacing:"-0.4px", marginBottom:6 }}>Create your account</h1>
             <p style={{ fontSize:14, color:"#64748b" }}>Start analyzing resumes like a pro</p>

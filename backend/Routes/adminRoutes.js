@@ -1,8 +1,12 @@
 import express from "express"
 import supabase from "../config/Supabaseclient.js"
+import { getMetrics } from "../Controllers/adminController.js"
+import { protect } from "../Middleware/authMiddleware.js"
 
 const router = express.Router()
 
+// GET /admin/metrics
+router.get("/metrics", protect, getMetrics)
 
 router.get("/logs", async (req, res) => {
   const { table = "error_logs", limit = 50 } = req.query

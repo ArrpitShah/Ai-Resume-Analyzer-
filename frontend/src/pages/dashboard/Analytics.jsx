@@ -43,10 +43,9 @@ const Analytics = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const token = localStorage.getItem("access_token")
         const [resumesRes, jdsRes] = await Promise.allSettled([
-          api.get("/api/resume/user/me", { headers: { Authorization: `Bearer ${token}` } }),
-          api.get("/api/jd/user/me", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/api/resume/my-resumes"),
+          api.get("/api/jd/my-jds"),
         ])
 
         const resumes = resumesRes.status === "fulfilled" ? resumesRes.value.data.data : []

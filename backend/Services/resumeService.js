@@ -1,9 +1,22 @@
 import supabase from "../config/Supabaseclient.js"
 
-export async function saveResume(parsedData, plainText = "", fileInfo = {}, userId = null) {
+export async function saveResume(parsedData, plainText = "", fileInfo = {}, userId = null, parentId = null) {
+  let version = 1
+  
+  if (parentId) {
+    const { data: latest } = await supabase
+      .from("resumes")
+      .select("version")
+      .eq("parent_id", parentId)
+      .order("version", { ascending: false })
+      .limit(1)
+      .single()
+    if (latest) version = (latest.version || 1) + 1
+  }
 
   const resumePayload = {
     user_id:          userId,
+    parent_id:        parentId,
     candidate_name:   parsedData.basic_info?.name              ?? "",
     email:            parsedData.basic_info?.email             ?? "",
     phone:            parsedData.basic_info?.phone             ?? "",
@@ -13,7 +26,7 @@ export async function saveResume(parsedData, plainText = "", fileInfo = {}, user
     plain_text:       plainText,
     structured_json:  parsedData,
     processing_status: "completed",
-    version:          1,
+    version,
   }
 
   const { data: resumeData, error: resumeError } = await supabase
@@ -25,7 +38,7 @@ export async function saveResume(parsedData, plainText = "", fileInfo = {}, user
   if (resumeError) throw new Error(`Failed to save resume: ${resumeError.message}`)
 
   const resumeId = resumeData.id
-  console.log(`[resumeService] Resume saved with id: ${resumeId}`)
+  console.log(`[resumeService] Resume saved with id: ${resumeId}, version: ${version}`)
 
   if (fileInfo.file_name) {
     const filePayload = {
@@ -35,7 +48,7 @@ export async function saveResume(parsedData, plainText = "", fileInfo = {}, user
       file_path:      fileInfo.file_path ?? "",
       file_size:      fileInfo.file_size ?? 0,
       mime_type:      fileInfo.mime_type ?? "",
-      version:        1,
+      version,
       parsing_status: "completed",
       storage_status: "local",
       file_metadata: {
@@ -50,7 +63,20 @@ export async function saveResume(parsedData, plainText = "", fileInfo = {}, user
     if (fileError) console.warn(`[resumeService] Failed to save file info: ${fileError.message}`)
   }
 
-  return { resume_id: resumeId }
+  return { resume_id: resumeId, version }
+}
+
+
+export async function getResumeVersions(parentId) {
+  const { data, error } = await supabase
+    .from("resumes")
+    .select("id, version, created_at, candidate_name, total_experience")
+    .eq("parent_id", parentId)
+    .or(`id.eq.${parentId}`) // Include the original
+    .order("version", { ascending: false })
+
+  if (error) throw new Error(`Failed to fetch versions: ${error.message}`)
+  return data
 }
 
 

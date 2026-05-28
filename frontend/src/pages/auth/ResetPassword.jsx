@@ -13,6 +13,13 @@ export default function ResetPassword() {
   const [focusPw,   setFocusPw]   = useState(false)
   const [focusCf,   setFocusCf]   = useState(false)
   const [ready,     setReady]     = useState(false)
+  const [isMobile,  setIsMobile]  = useState(window.innerWidth < 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -46,7 +53,7 @@ export default function ResetPassword() {
   const sColor = ["","#ef4444","#f59e0b","#2563EB","#10b981"][strength]
 
   return (
-    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"linear-gradient(135deg,#F8FAFC 0%,#EFF6FF 60%,#F0F9FF 100%)", fontFamily:"'Exo 2','Inter',sans-serif", padding:"24px" }}>
+    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Exo 2','Inter',sans-serif", padding:"24px" }} className="lbg">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Lilita+One&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
@@ -54,6 +61,10 @@ export default function ResetPassword() {
         @keyframes sp{to{transform:rotate(360deg)}} .sp{animation:sp 1s linear infinite;}
         @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}} .lf{animation:fl 3s ease-in-out infinite;}
         .pi{width:100%;padding:11px 44px 11px 40px;font-size:14px;border-radius:12px;outline:none;background:#fff;color:#0f172a;transition:all .2s;font-family:'Exo 2','Inter',sans-serif;}
+        .logo-rem{color:#0f172a;}
+        .dark .logo-rem{color:#f8fafc;}
+        .lbg{background:linear-gradient(135deg,#F8FAFC 0%,#EFF6FF 60%,#F0F9FF 100%); transition: background .3s;}
+        .dark .lbg{background:#0A0F1E;}
       `}</style>
 
       <div className="fu" style={{ width:"100%", maxWidth:420 }}>
@@ -62,7 +73,7 @@ export default function ResetPassword() {
             <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
           </div>
           <span style={{ fontSize:22, fontWeight:400, fontFamily:"'Lilita One',sans-serif" }}>
-            <span style={{ color:"#0f172a" }}>Rem</span><span style={{ color:"#2563EB" }}>Check</span>
+            <span className="logo-rem">Rem</span><span style={{ color:"#2563EB" }}>Check</span>
           </span>
         </Link>
 

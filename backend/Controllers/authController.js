@@ -5,6 +5,7 @@ import {
   refreshSession,
   forgotPassword,
 } from "../Services/authService.js"
+import { sendWelcomeEmail } from "../Services/emailService.js"
 
 
 export const register = async (req, res) => {
@@ -20,6 +21,11 @@ export const register = async (req, res) => {
     }
 
     const result = await signUp({ email, password, fullName: fullName ?? "" })
+    
+    // ✅ Send welcome email
+    sendWelcomeEmail(email, fullName ?? "New User")
+      .catch(err => console.error("[register] Welcome email failed:", err.message))
+
     res.status(201).json(result)
 
   } catch (err) {

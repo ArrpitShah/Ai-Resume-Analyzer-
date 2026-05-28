@@ -25,7 +25,7 @@ function cosineSimilarity(vecA, vecB) {
 
 async function getAIAnalysis(resumePlainText, jdPlainText, similarityScore) {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
   const prompt = `You are an expert ATS (Applicant Tracking System) and resume analyzer.
 
@@ -128,7 +128,7 @@ export async function matchResumeWithJD(resumeId, jdId, userId = null) {
     improvement_suggestions: analysis.improvement_suggestions ?? [],
     interview_questions:     analysis.interview_questions    ?? [],
     ai_full_response:        analysis,
-    model_used:              "gemini-2.5-flash",
+    model_used:              "gemini-1.5-flash",
     processing_status:       "completed",
     version:                 1,
   }
@@ -145,6 +145,8 @@ export async function matchResumeWithJD(resumeId, jdId, userId = null) {
 
   return {
     analysis_id:      data.id,
+    resume_id:        resumeId,
+    jd_id:            jdId,
     candidate_name:   resume.candidate_name,
     job_title:        jd.title,
     company_name:     jd.company_name,
@@ -153,6 +155,22 @@ export async function matchResumeWithJD(resumeId, jdId, userId = null) {
   }
 }
 
+
+
+export async function matchMultipleJDs(resumeId, jdIds = [], userId = null) {
+  if (jdIds.length > 5) throw new Error("Maximum 5 job descriptions allowed for comparison.")
+  
+  const results = await Promise.all(jdIds.map(async (jdId) => {
+    try {
+      return await matchResumeWithJD(resumeId, jdId, userId)
+    } catch (err) {
+      console.error(`[matchMultipleJDs] Failed for JD ${jdId}:`, err.message)
+      return { jd_id: jdId, error: err.message }
+    }
+  }))
+
+  return results
+}
 
 
 export async function getAnalysisById(analysisId) {
@@ -168,13 +186,35 @@ export async function getAnalysisById(analysisId) {
 
 
 
-export async function getAnalysesByUser(userId) {
-  const { data, error } = await supabase
+export async function getAnalysesByUser(userId, options = {}) {
+  const { page = 1, limit = 10, search = "", rating = "", minScore = 0 } = options
+  const offset = (page - 1) * limit
+
+  let query = supabase
     .from("resume_jd_analysis")
-    .select("id, resume_id, jd_id, match_percentage, ats_score, overall_rating, created_at")
+    .select(`
+      id, resume_id, jd_id, match_percentage, ats_score, overall_rating, created_at,
+      resumes!resume_id(candidate_name)
+    `, { count: "exact" })
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1)
+
+  if (rating) query = query.eq("overall_rating", rating)
+  if (minScore) query = query.gte("ats_score", minScore)
+
+  const { data, error, count } = await query
 
   if (error) throw new Error(`Failed to fetch analyses: ${error.message}`)
-  return data
+
+  // Manual search filter if search term provided (Supabase joined filter is complex)
+  let filteredData = data
+  if (search) {
+    filteredData = data.filter(a => 
+      a.resumes?.candidate_name?.toLowerCase().includes(search.toLowerCase()) ||
+      a.overall_rating?.toLowerCase().includes(search.toLowerCase())
+    )
+  }
+
+  return { data: filteredData, total: count, page, limit }
 }

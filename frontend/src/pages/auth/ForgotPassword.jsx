@@ -8,6 +8,13 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false)
   const [sent,    setSent]    = useState(false)
   const [focus,   setFocus]   = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+
+  useState(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -25,7 +32,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"linear-gradient(135deg,#F8FAFC 0%,#EFF6FF 60%,#F0F9FF 100%)", fontFamily:"'Exo 2','Inter',sans-serif", padding:"24px" }}>
+    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Exo 2','Inter',sans-serif", padding:"24px" }} className="lbg">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Lilita+One&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
@@ -33,6 +40,10 @@ export default function ForgotPassword() {
         @keyframes sp{to{transform:rotate(360deg)}} .sp{animation:sp 1s linear infinite;}
         @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}} .lf{animation:fl 3s ease-in-out infinite;}
         @keyframes cp{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}} .cp{animation:cp .4s cubic-bezier(.16,1,.3,1) forwards;}
+        .logo-rem{color:#0f172a;}
+        .dark .logo-rem{color:#f8fafc;}
+        .lbg{background:linear-gradient(135deg,#F8FAFC 0%,#EFF6FF 60%,#F0F9FF 100%); transition: background .3s;}
+        .dark .lbg{background:#0A0F1E;}
       `}</style>
 
       <div className="fu" style={{ width:"100%", maxWidth:420 }}>
@@ -43,7 +54,7 @@ export default function ForgotPassword() {
             <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h6M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
           </div>
           <span style={{ fontSize:22, fontWeight:400, fontFamily:"'Lilita One',sans-serif" }}>
-            <span style={{ color:"#0f172a" }}>Rem</span><span style={{ color:"#2563EB" }}>Check</span>
+            <span className="logo-rem">Rem</span><span style={{ color:"#2563EB" }}>Check</span>
           </span>
         </Link>
 
@@ -53,7 +64,7 @@ export default function ForgotPassword() {
               <div style={{ width:56, height:56, borderRadius:16, background:"#eff6ff", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:20 }}>
                 <svg width="26" height="26" fill="none" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3" stroke="#2563EB" strokeWidth="1.8"/><path d="M2 8l10 7 10-7" stroke="#2563EB" strokeWidth="1.8" strokeLinecap="round"/></svg>
               </div>
-              <h1 style={{ fontSize:24, fontFamily:"'Lilita One',sans-serif", color:"#0f172a", marginBottom:8 }}>Forgot password?</h1>
+              <h1 style={{ fontSize:24, fontFamily:"'Lilita One',sans-serif", marginBottom:8 }} className="logo-rem">Forgot password?</h1>
               <p style={{ fontSize:14, color:"#64748b", marginBottom:28, lineHeight:1.6 }}>
                 No worries! Enter your email and we'll send you a reset link.
               </p>

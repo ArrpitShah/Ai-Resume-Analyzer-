@@ -8,6 +8,7 @@ import {
   forgotPasswordHandler,
 } from "../Controllers/authController.js"
 import { protect } from "../Middleware/authMiddleware.js"
+import { validateAuth } from "../Middleware/securityMiddleware.js"
 import rateLimit from "express-rate-limit"
 
 const router = express.Router()
@@ -22,11 +23,11 @@ const authLimiter = rateLimit({
 })
 
 
-router.post("/signup",          authLimiter, register)
-router.post("/login",           authLimiter, loginUser)
+router.post("/signup",          authLimiter, validateAuth, register)
+router.post("/login",           authLimiter, validateAuth, loginUser)
 router.post("/logout",          logoutUser)
 router.post("/refresh",         refresh)
-router.post("/forgot-password", authLimiter, forgotPasswordHandler)
+router.post("/forgot-password", authLimiter, validateAuth, forgotPasswordHandler)
 
 router.get("/me", protect, getMe)
 
